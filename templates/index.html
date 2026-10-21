@@ -1,0 +1,818 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Student Grade Prediction System</title>
+  <style>
+    :root {
+      --primary: #4f46e5;
+      --primary-hover: #4338ca;
+      --bg-gradient: linear-gradient(135deg, #0f172a 0%, #1e1b4b 50%, #0f172a 100%);
+      --surface: #ffffff;
+      --surface-subtle: #f8fafc;
+      --border: #e2e8f0;
+      --text-main: #0f172a;
+      --text-muted: #64748b;
+      --radius: 14px;
+      --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+      --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+      --shadow-lg: 0 20px 25px -5px rgb(0 0 0 / 0.15), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, sans-serif; }
+
+    body {
+      background: var(--bg-gradient);
+      min-height: 100vh;
+      color: var(--text-main);
+      padding: 30px 16px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 1080px;
+    }
+
+    header {
+      text-align: center;
+      margin-bottom: 28px;
+      color: #ffffff;
+    }
+
+    .badge-header {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(99, 102, 241, 0.25);
+      border: 1px solid rgba(129, 140, 248, 0.4);
+      color: #c7d2fe;
+      padding: 6px 14px;
+      border-radius: 9999px;
+      font-size: 0.82rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 12px;
+    }
+
+    h1 {
+      font-size: 2.2rem;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      margin-bottom: 8px;
+      background: linear-gradient(to right, #ffffff, #c7d2fe);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    p.subtitle {
+      color: #94a3b8;
+      font-size: 1rem;
+      max-width: 650px;
+      margin: 0 auto;
+    }
+
+    /* Preset buttons */
+    .presets {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      margin-top: 16px;
+      flex-wrap: wrap;
+    }
+
+    .preset-btn {
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      color: #e2e8f0;
+      padding: 6px 14px;
+      border-radius: 8px;
+      font-size: 0.85rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .preset-btn:hover {
+      background: rgba(255, 255, 255, 0.18);
+      border-color: #818cf8;
+      color: #ffffff;
+      transform: translateY(-1px);
+    }
+
+    /* Main Grid */
+    .main-grid {
+      display: grid;
+      grid-template-columns: 1.4fr 1fr;
+      gap: 24px;
+      align-items: start;
+    }
+
+    @media (max-width: 900px) {
+      .main-grid { grid-template-columns: 1fr; }
+    }
+
+    .card {
+      background: var(--surface);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow-lg);
+      border: 1px solid rgba(255, 255, 255, 0.7);
+      overflow: hidden;
+    }
+
+    .card-header {
+      padding: 18px 24px;
+      border-bottom: 1px solid var(--border);
+      background: var(--surface-subtle);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .card-title {
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: #1e293b;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .card-body {
+      padding: 24px;
+    }
+
+    /* Form Sections */
+    .section-title {
+      font-size: 0.8rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: #6366f1;
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .form-group-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 14px;
+      margin-bottom: 20px;
+    }
+
+    @media (max-width: 580px) {
+      .form-group-grid { grid-template-columns: 1fr; }
+    }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    label {
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: #334155;
+    }
+
+    select, input[type="text"], input[type="number"] {
+      width: 100%;
+      padding: 10px 12px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      font-size: 0.92rem;
+      background: #ffffff;
+      color: var(--text-main);
+      transition: all 0.2s ease;
+      outline: none;
+    }
+
+    select:focus, input:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.15);
+    }
+
+    /* Submit Button */
+    .submit-btn {
+      width: 100%;
+      padding: 14px 20px;
+      background: linear-gradient(135deg, #4f46e5 0%, #6366f1 100%);
+      color: white;
+      font-size: 1.05rem;
+      font-weight: 700;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      box-shadow: 0 4px 12px rgba(79, 70, 229, 0.35);
+      transition: all 0.2s ease;
+      margin-top: 8px;
+    }
+
+    .submit-btn:hover {
+      background: linear-gradient(135deg, #4338ca 0%, #4f46e5 100%);
+      box-shadow: 0 6px 18px rgba(79, 70, 229, 0.45);
+      transform: translateY(-1px);
+    }
+
+    .submit-btn:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    /* Result Panel */
+    .placeholder-state {
+      text-align: center;
+      padding: 48px 20px;
+      color: var(--text-muted);
+    }
+
+    .placeholder-icon {
+      font-size: 3rem;
+      margin-bottom: 12px;
+      opacity: 0.6;
+    }
+
+    .prediction-card {
+      display: none;
+      animation: fadeIn 0.35s ease;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .grade-display {
+      padding: 24px;
+      border-radius: 12px;
+      text-align: center;
+      background: #f8fafc;
+      border: 2px dashed #cbd5e1;
+      margin-bottom: 16px;
+    }
+
+    .grade-badge {
+      display: inline-block;
+      font-size: 3.5rem;
+      font-weight: 900;
+      line-height: 1;
+      padding: 12px 32px;
+      border-radius: 16px;
+      margin-bottom: 8px;
+      box-shadow: var(--shadow-md);
+    }
+
+    /* Grade Color Schemes */
+    .grade-high {
+      background: #ecfdf5;
+      color: #059669;
+      border: 2px solid #a7f3d0;
+    }
+
+    .grade-medium {
+      background: #eff6ff;
+      color: #2563eb;
+      border: 2px solid #bfdbfe;
+    }
+
+    .grade-low {
+      background: #fffbeb;
+      color: #d97706;
+      border: 2px solid #fde68a;
+    }
+
+    .grade-fail {
+      background: #fef2f2;
+      color: #dc2626;
+      border: 2px solid #fecaca;
+    }
+
+    .grade-status-text {
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: #1e293b;
+      margin-top: 4px;
+    }
+
+    .confidence-box {
+      background: #f8fafc;
+      padding: 16px;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      margin-bottom: 16px;
+    }
+
+    .confidence-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 8px;
+      font-size: 0.9rem;
+      font-weight: 600;
+    }
+
+    .confidence-percentage {
+      font-size: 1.25rem;
+      font-weight: 800;
+      color: #4f46e5;
+    }
+
+    .progress-track {
+      width: 100%;
+      height: 10px;
+      background: #e2e8f0;
+      border-radius: 999px;
+      overflow: hidden;
+    }
+
+    .progress-fill {
+      height: 100%;
+      background: linear-gradient(to right, #6366f1, #10b981);
+      width: 0%;
+      border-radius: 999px;
+      transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    /* Class probability breakdown */
+    .probabilities-title {
+      font-size: 0.85rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: #475569;
+      margin-bottom: 10px;
+    }
+
+    .prob-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 8px;
+      font-size: 0.85rem;
+    }
+
+    .prob-label {
+      width: 40px;
+      font-weight: 700;
+      color: #1e293b;
+    }
+
+    .prob-bar-container {
+      flex: 1;
+      height: 8px;
+      background: #f1f5f9;
+      border-radius: 4px;
+      overflow: hidden;
+    }
+
+    .prob-bar {
+      height: 100%;
+      background: #818cf8;
+      border-radius: 4px;
+      transition: width 0.5s ease;
+    }
+
+    .prob-val {
+      width: 48px;
+      text-align: right;
+      color: #64748b;
+      font-variant-numeric: tabular-nums;
+      font-weight: 600;
+    }
+
+    /* Alert / Error */
+    .alert-box {
+      display: none;
+      background: #fef2f2;
+      border: 1px solid #fecaca;
+      color: #b91c1c;
+      padding: 12px 16px;
+      border-radius: 8px;
+      font-size: 0.9rem;
+      margin-bottom: 16px;
+    }
+
+    footer {
+      text-align: center;
+      margin-top: 36px;
+      color: #94a3b8;
+      font-size: 0.85rem;
+    }
+
+    footer a {
+      color: #a5b4fc;
+      text-decoration: none;
+      font-weight: 600;
+    }
+
+    footer a:hover {
+      text-decoration: underline;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <div class="badge-header">⚡ Machine Learning Model Active</div>
+      <h1>Student Grade Prediction System</h1>
+      <p class="subtitle">Predict academic performance and final letter grades from demographic attributes, study habits, and classroom engagement.</p>
+      
+      <div class="presets">
+        <span style="color:#94a3b8; font-size:0.85rem; line-height:2rem; margin-right:4px;">Quick Fill Samples:</span>
+        <button type="button" class="preset-btn" onclick="applyPreset('high')">🌟 High Achiever</button>
+        <button type="button" class="preset-btn" onclick="applyPreset('average')">⚖️ Average Student</button>
+        <button type="button" class="preset-btn" onclick="applyPreset('at_risk')">⚠️ At-Risk Student</button>
+      </div>
+    </header>
+
+    <div class="main-grid">
+      <!-- Input Form Card -->
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">📝 Student Information Form</div>
+          <span style="font-size: 0.8rem; color: #64748b;">All features used by model</span>
+        </div>
+        <div class="card-body">
+          <form id="predictionForm">
+            
+            <!-- Section 1: Demographics -->
+            <div class="section-title">👤 Demographics & Background</div>
+            <div class="form-group-grid">
+              <div class="form-group">
+                <label for="student_id">Student ID (Optional)</label>
+                <input type="text" id="student_id" placeholder="e.g. STUDENT101" value="STUDENT101">
+              </div>
+
+              <div class="form-group">
+                <label for="student_age">Age Group</label>
+                <select id="student_age" required>
+                  <option value="18">18</option>
+                  <option value="19-22" selected>19-22</option>
+                  <option value="23-27">23-27</option>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label for="sex">Gender / Sex</label>
+                <select id="sex" required>
+                  <option value="Male" selected>Male</option>
+                  <option value="Female">Female</option>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label for="high_school_type">High School Type</label>
+                <select id="high_school_type" required>
+                  <option value="State" selected>State</option>
+                  <option value="Private">Private</option>
+                  <option value="Other">Other</option>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label for="scholarship">Scholarship Level</label>
+                <select id="scholarship" required>
+                  <option value="25%">25%</option>
+                  <option value="50%" selected>50%</option>
+                  <option value="75%">75%</option>
+                  <option value="100%">100%</option>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label for="transportation">Transportation</label>
+                <select id="transportation" required>
+                  <option value="Private" selected>Private</option>
+                  <option value="Bus">Bus</option>
+                </select>
+              </div>
+            </div>
+
+            <!-- Section 2: Study Habits & Engagement -->
+            <div class="section-title">📚 Study Habits & Classroom Engagement</div>
+            <div class="form-group-grid">
+              <div class="form-group">
+                <label for="weekly_study_hours">Weekly Study Hours (0-20+)</label>
+                <input type="number" id="weekly_study_hours" min="0" max="60" step="1" value="2" required>
+              </div>
+
+              <div class="form-group">
+                <label for="attendance">Attendance Frequency</label>
+                <select id="attendance" required>
+                  <option value="Always" selected>Always</option>
+                  <option value="Sometimes">Sometimes</option>
+                  <option value="Never">Never</option>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label for="notes">Takes Notes in Class</label>
+                <select id="notes" required>
+                  <option value="Yes" selected>Yes</option>
+                  <option value="No">No</option>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label for="listening_in_class">Listens in Class Attentively</label>
+                <select id="listening_in_class" required>
+                  <option value="Yes" selected>Yes</option>
+                  <option value="No">No</option>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label for="reading">Regular Reading Habits</label>
+                <select id="reading" required>
+                  <option value="Yes" selected>Yes</option>
+                  <option value="No">No</option>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label for="project_work">Project Work Participation</label>
+                <select id="project_work" required>
+                  <option value="Yes">Yes</option>
+                  <option value="No" selected>No</option>
+                </select>
+              </div>
+            </div>
+
+            <!-- Section 3: Activities & Work -->
+            <div class="section-title">💼 Activities & Commitments</div>
+            <div class="form-group-grid">
+              <div class="form-group">
+                <label for="additional_work">Has Additional Work / Job</label>
+                <select id="additional_work" required>
+                  <option value="No" selected>No</option>
+                  <option value="Yes">Yes</option>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label for="sports_activity">Sports & Athletics</label>
+                <select id="sports_activity" required>
+                  <option value="No" selected>No</option>
+                  <option value="Yes">Yes</option>
+                </select>
+              </div>
+            </div>
+
+            <button type="submit" class="submit-btn" id="submitBtn">
+              <span>🔮 Predict Grade</span>
+            </button>
+          </form>
+        </div>
+      </div>
+
+      <!-- Result Card -->
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">🎯 Prediction Output</div>
+          <span style="font-size: 0.8rem; color: #64748b;">Random Forest Pipeline</span>
+        </div>
+        <div class="card-body">
+          <div id="errorAlert" class="alert-box"></div>
+
+          <!-- Empty State -->
+          <div id="placeholderState" class="placeholder-state">
+            <div class="placeholder-icon">📊</div>
+            <h3 style="color:#334155; margin-bottom:6px;">Ready for Evaluation</h3>
+            <p style="font-size: 0.9rem;">Fill in the student details on the left and click <strong>Predict Grade</strong> to evaluate expected academic performance.</p>
+          </div>
+
+          <!-- Prediction Result Box -->
+          <div id="predictionCard" class="prediction-card">
+            <div class="grade-display">
+              <div style="font-size: 0.85rem; font-weight: 700; text-transform: uppercase; color: #64748b; margin-bottom: 8px;">
+                Predicted Letter Grade
+              </div>
+              <div id="gradeBadge" class="grade-badge grade-high">AA</div>
+              <div id="gradeStatusText" class="grade-status-text">Excellent Performance</div>
+              <div id="studentIdTag" style="font-size: 0.8rem; color: #94a3b8; margin-top: 4px;">Student: STUDENT101</div>
+            </div>
+
+            <div class="confidence-box">
+              <div class="confidence-header">
+                <span>Model Confidence</span>
+                <span id="confidenceValue" class="confidence-percentage">0%</span>
+              </div>
+              <div class="progress-track">
+                <div id="confidenceProgress" class="progress-fill"></div>
+              </div>
+            </div>
+
+            <div>
+              <div class="probabilities-title">Class Probabilities Distribution</div>
+              <div id="probabilitiesList"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <footer>
+      Student Grade Prediction API • <a href="/docs" target="_blank">Interactive Swagger Docs</a> • <a href="/students" target="_blank">View All Students JSON</a>
+    </footer>
+  </div>
+
+  <script>
+    // Sample presets for quick testing
+    const presets = {
+      high: {
+        student_id: 'STUDENT_TOP',
+        student_age: '18',
+        sex: 'Female',
+        high_school_type: 'Private',
+        scholarship: '100%',
+        transportation: 'Private',
+        weekly_study_hours: 12,
+        attendance: 'Always',
+        notes: 'Yes',
+        listening_in_Class: 'Yes',
+        reading: 'Yes',
+        project_work: 'Yes',
+        additional_work: 'No',
+        sports_activity: 'Yes'
+      },
+      average: {
+        student_id: 'STUDENT_AVG',
+        student_age: '19-22',
+        sex: 'Male',
+        high_school_type: 'State',
+        scholarship: '50%',
+        transportation: 'Bus',
+        weekly_study_hours: 2,
+        attendance: 'Always',
+        notes: 'Yes',
+        listening_in_Class: 'Yes',
+        reading: 'No',
+        project_work: 'No',
+        additional_work: 'No',
+        sports_activity: 'No'
+      },
+      at_risk: {
+        student_id: 'STUDENT_RISK',
+        student_age: '23-27',
+        sex: 'Male',
+        high_school_type: 'Other',
+        scholarship: '25%',
+        transportation: 'Bus',
+        weekly_study_hours: 0,
+        attendance: 'Never',
+        notes: 'No',
+        listening_in_Class: 'No',
+        reading: 'No',
+        project_work: 'No',
+        additional_work: 'Yes',
+        sports_activity: 'No'
+      }
+    };
+
+    function applyPreset(name) {
+      const p = presets[name];
+      if (!p) return;
+      document.getElementById('student_id').value = p.student_id;
+      document.getElementById('student_age').value = p.student_age;
+      document.getElementById('sex').value = p.sex;
+      document.getElementById('high_school_type').value = p.high_school_type;
+      document.getElementById('scholarship').value = p.scholarship;
+      document.getElementById('transportation').value = p.transportation;
+      document.getElementById('weekly_study_hours').value = p.weekly_study_hours;
+      document.getElementById('attendance').value = p.attendance;
+      document.getElementById('notes').value = p.notes;
+      document.getElementById('listening_in_class').value = p.listening_in_Class;
+      document.getElementById('reading').value = p.reading;
+      document.getElementById('project_work').value = p.project_work;
+      document.getElementById('additional_work').value = p.additional_work;
+      document.getElementById('sports_activity').value = p.sports_activity;
+    }
+
+    // Grade status descriptions & styling
+    function getGradeDetails(grade) {
+      const g = grade.toUpperCase();
+      if (['AA', 'BA', 'A'].includes(g)) {
+        return { style: 'grade-high', text: 'Distinction / High Standing' };
+      } else if (['BB', 'CB', 'B'].includes(g)) {
+        return { style: 'grade-medium', text: 'Good Academic Standing' };
+      } else if (['CC', 'DC', 'DD', 'C', 'D'].includes(g)) {
+        return { style: 'grade-low', text: 'Satisfactory / Needs Attention' };
+      } else {
+        return { style: 'grade-fail', text: 'Academic Risk / Fail' };
+      }
+    }
+
+    // Form submit listener
+    const form = document.getElementById('predictionForm');
+    const submitBtn = document.getElementById('submitBtn');
+    const placeholderState = document.getElementById('placeholderState');
+    const predictionCard = document.getElementById('predictionCard');
+    const errorAlert = document.getElementById('errorAlert');
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      errorAlert.style.display = 'none';
+
+      // Build payload
+      const payload = {
+        Student_ID: document.getElementById('student_id').value.trim() || undefined,
+        Student_Age: document.getElementById('student_age').value,
+        Sex: document.getElementById('sex').value,
+        High_School_Type: document.getElementById('high_school_type').value,
+        Scholarship: document.getElementById('scholarship').value,
+        Transportation: document.getElementById('transportation').value,
+        Weekly_Study_Hours: parseFloat(document.getElementById('weekly_study_hours').value) || 0,
+        Attendance: document.getElementById('attendance').value,
+        Notes: document.getElementById('notes').value,
+        Listening_in_Class: document.getElementById('listening_in_class').value,
+        Reading: document.getElementById('reading').value,
+        Project_work: document.getElementById('project_work').value,
+        Additional_Work: document.getElementById('additional_work').value,
+        Sports_activity: document.getElementById('sports_activity').value
+      };
+
+      submitBtn.disabled = true;
+      submitBtn.innerHTML = '<span>⏳ Processing Prediction...</span>';
+
+      try {
+        const response = await fetch('/predict', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+          throw new Error(data.detail || 'Prediction request failed.');
+        }
+
+        // Render Result
+        renderResult(data);
+      } catch (err) {
+        errorAlert.textContent = 'Error: ' + err.message;
+        errorAlert.style.display = 'block';
+      } finally {
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = '<span>🔮 Predict Grade</span>';
+      }
+    });
+
+    function renderResult(data) {
+      placeholderState.style.display = 'none';
+      predictionCard.style.display = 'block';
+
+      const badge = document.getElementById('gradeBadge');
+      const statusText = document.getElementById('gradeStatusText');
+      const studentIdTag = document.getElementById('studentIdTag');
+      const confValue = document.getElementById('confidenceValue');
+      const confProgress = document.getElementById('confidenceProgress');
+      const probList = document.getElementById('probabilitiesList');
+
+      const details = getGradeDetails(data.predicted_grade);
+
+      badge.className = 'grade-badge ' + details.style;
+      badge.textContent = data.predicted_grade;
+      statusText.textContent = details.text;
+      studentIdTag.textContent = data.student_id ? 'Student ID: ' + data.student_id : 'Single Student Evaluation';
+
+      // Confidence
+      const conf = parseFloat(data.confidence) || 0;
+      confValue.textContent = data.confidence_percentage || (conf + '%');
+      confProgress.style.width = Math.min(100, Math.max(0, conf)) + '%';
+
+      // Probabilities list
+      probList.innerHTML = '';
+      if (data.class_probabilities) {
+        // Sort highest probability first
+        const sortedEntries = Object.entries(data.class_probabilities).sort((a, b) => b[1] - a[1]);
+        for (const [cls, p] of sortedEntries) {
+          const pct = (p * 100).toFixed(1);
+          const item = document.createElement('div');
+          item.className = 'prob-item';
+          item.innerHTML = `
+            <div class="prob-label">${cls}</div>
+            <div class="prob-bar-container">
+              <div class="prob-bar" style="width: ${pct}%;"></div>
+            </div>
+            <div class="prob-val">${pct}%</div>
+          `;
+          probList.appendChild(item);
+        }
+      }
+    }
+  </script>
+</body>
+</html>
