@@ -22,10 +22,8 @@
 
 <div align="center">
   <h3>Interactive Input Form & Real-Time Grade Prediction</h3>
-  <img src="dashboard_overview.png" alt="Student Grade Prediction Dashboard Overview" width="900" style="border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.2);">
+  <img src="dashboard_overview.png" alt="image.png" width="900" style="border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.2);">
   <br><br>
-  <h3>Class Probability Distribution & Raw REST API Response</h3>
-  <img src="dashboard_analytics.png" alt="Probability Distribution and API Analytics" width="900" style="border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.2);">
 </div>
 
 ---
