@@ -20,12 +20,7 @@
 
 ## 📸 Dashboard Preview
 
-<div align="center">
-  <h3>Interactive Input Form & Real-Time Grade Prediction</h3>
-  <img src="dashboard_overview.png" alt="image.png" width="900" style="border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.2);">
-  <br><br>
-</div>
-
+**Link:** http://16.176.100.226:8000/
 ---
 
 ## 🌟 Overview
